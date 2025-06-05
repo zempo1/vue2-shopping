@@ -84,13 +84,13 @@
     </el-card>
 
     <!-- 详情对话框 -->
-    <el-dialog title="商品详情" :visible.sync="detailDialogVisible" width="50%">
-      <div v-if="detailData" class="detail-content">
+    <el-dialog title="商品详情" :visible.sync="detailDialogVisible" width="60%" center>
+      <div v-if="detailData" class="detail-content" style="max-height: 60vh; overflow-y: auto;">
         <div class="detail-section">
           <h3>基本信息</h3>
           <el-descriptions :column="2" border>
+            <el-descriptions-item label="商家名称" >{{ detailData.merchantName }}</el-descriptions-item>
             <el-descriptions-item label="商品名称">{{ detailData.name }}</el-descriptions-item>
-            <el-descriptions-item label="商家名称">{{ detailData.merchantName }}</el-descriptions-item>
             <el-descriptions-item label="商品分类">{{ detailData.category }}</el-descriptions-item>
             <el-descriptions-item label="商品价格">¥{{ detailData.price }}</el-descriptions-item>
             <el-descriptions-item label="提交时间">{{ detailData.submitTime }}</el-descriptions-item>
@@ -322,7 +322,7 @@ export default {
 }
 
 .detail-content {
-  padding: 0 20px;
+  padding: 20px;
 
   .detail-section {
     margin-bottom: 24px;
@@ -348,5 +348,6 @@ export default {
     margin: 0 0 12px 0;
   }
 }
+
 </style>
 

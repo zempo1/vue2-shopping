@@ -1,7 +1,8 @@
 <template>
   <div class="app-container">
     1
-    
+
+
   </div>
 </template>
 
@@ -19,4 +20,8 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+
+</style>
 

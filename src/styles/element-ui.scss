@@ -47,3 +47,12 @@
 .el-range-separator {
   box-sizing: content-box;
 }
+
+// descriptions相关
+.el-descriptions-item__label.is-bordered-label {
+  background-color: #f5f5f5;
+}
+
+.el-descriptions .is-bordered .el-descriptions-item__cell {
+  border: 1px solid #ddd;
+}
