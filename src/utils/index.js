@@ -45,7 +45,7 @@ export function parseTime(time, cFormat) {
   const time_str = format.replace(/{([ymdhisa])+}/g, (result, key) => {
     const value = formatObj[key]
     // Note: getDay() returns 0 on Sunday
-    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value ] }
+    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value] }
     return value.toString().padStart(2, '0')
   })
   return time_str
@@ -91,6 +91,19 @@ export function formatTime(time, option) {
       d.getMinutes() +
       '分'
     )
+  }
+}
+
+//日期前面补0
+/**
+ * @param {string} num
+ * @returns {string}
+ */
+export function addZero(num) {
+  if (num < 10) {
+    return '0' + num
+  } else {
+    return num
   }
 }
 

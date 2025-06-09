@@ -2,37 +2,20 @@
   <div class="app-container">
     <!-- 搜索筛选区域 -->
     <el-card class="filter-container">
-      <el-form size="small" :inline="true" :model="queryParams" class="demo-form-inline">
-        <el-form-item label="商家名称" >
-          <el-input v-model="queryParams.merchantName" placeholder="请输入商家名称" clearable />
-        </el-form-item>
-        <el-form-item label="商品分类">
-          <el-select v-model="queryParams.category" placeholder="请选择商品分类" clearable>
-            <el-option v-for="item in categoryOptions" :key="item.value" :label="item.label" :value="item.value" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="提交时间">
-          <el-date-picker
-            v-model="queryParams.dateRange"
-            type="daterange"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            value-format="yyyy-MM-dd"
-          />
-        </el-form-item>
-        <el-form-item>
-          <el-button size="medium" type="primary" @click="handleQuery" >查询</el-button>
-          <el-button size="medium" @click="resetQuery">重置</el-button>
-        </el-form-item>
-      </el-form>
+        <filter-form 
+          :queryParams="queryParams"
+          :categoryOptions="categoryOptions"
+          @query="handleQuery" 
+          @reset="resetQuery" 
+        />
+      
     </el-card>
 
     <!-- 商品列表 -->
     <el-card class="list-container">
       <div class="table-operations">
-        <el-button type="primary" size="small" :disabled="!selectedGoods.length" @click="handleBatchApprove">批量通过</el-button>
-        <el-button type="danger" size="small" :disabled="!selectedGoods.length" @click="handleBatchReject">批量拒绝</el-button>
+        <el-button type="primary" size="medium" :disabled="!selectedGoods.length" @click="handleBatchApprove">批量通过</el-button>
+        <el-button type="danger" size="medium" :disabled="!selectedGoods.length" @click="handleBatchReject">批量拒绝</el-button>
       </div>
       <el-table border v-loading="loading" :data="goodsList" style="width: 100%" height="540" @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" />
@@ -129,7 +112,11 @@
 </template>
 
 <script>
+import FilterForm from '@/components/FilterForm'
 export default {
+  components: {
+    FilterForm
+  },
   data() {
     return {
       // 查询参数
@@ -142,10 +129,9 @@ export default {
       },
       // 商品分类选项
       categoryOptions: [
-        { value: '1', label: '数码电子' },
-        { value: '2', label: '服装服饰' },
-        { value: '3', label: '食品生鲜' },
-        { value: '4', label: '家居用品' }
+        { value: 'food', label: '食品' },
+        { value: 'clothing', label: '服装' },
+        { value: 'electronics', label: '电子产品' }
       ],
       // 加载状态
       loading: false,
@@ -210,6 +196,7 @@ export default {
     },
     // 查询按钮点击事件
     handleQuery() {
+      console.log('商品审核查询');
       this.queryParams.pageNum = 1
       this.getList()
     },

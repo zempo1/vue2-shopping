@@ -4,37 +4,49 @@
      
     <el-card class="header-card">
        <!-- 筛选条件 -->
-      <div class="filter-container">
-        <el-date-picker
-          v-model="filterTime"
-          type="daterange"
-          range-separator="至"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-          format="yyyy年MM月dd日"
-          value-format="yyyy-MM-dd"
-          :value="filterTime || []"
-          @change="handleDateFilter"
-        />
-  
-        <el-select
-          v-model="filterStatus"
-          placeholder="订单状态"
-          clearable
-          style="width: 150px; margin-left: 10px"
-        >
-          <el-option
-            v-for="status in statusOptions"
-            :key="status.value"
-            :label="status.label"
-            :value="status.value"
+      <el-form size="medium" :inline="true" :model="queryParams" >
+        <el-form-item label="商家名称" >
+          <el-input v-model="queryParams.merchantName" placeholder="请输入商家名称" clearable />
+        </el-form-item>
+        <el-form-item label="商品分类">
+          <el-select v-model="queryParams.category" placeholder="请选择商品分类" clearable>
+            <el-option v-for="item in categoryOptions" :key="item.value" :label="item.label" :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="提交时间">
+          <el-date-picker
+            v-model="queryParams.filterTime"
+            type="daterange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            format="yyyy年MM月dd日"
+            value-format="yyyy-MM-dd"
+            :value="queryParams.filterTime || []"
+            @change="handleDateFilter"
           />
-        </el-select>
-  
-        <el-button type="text" style="margin-left: 10px" @click="resetFilters">
-          显示全部
-        </el-button>
-      </div>
+        </el-form-item>
+
+        <el-form-item label="订单状态">
+          <el-select
+            v-model="queryParams.filterStatus"
+            placeholder="订单状态"
+            clearable
+          >
+            <el-option
+              v-for="status in statusOptions"
+              :key="status.value"
+              :label="status.label"
+              :value="status.value"
+            />
+         </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button size="medium" type="primary" @click="handleQuery" style="margin-right: 5px;" >查询</el-button>
+          <el-button size="medium" @click="resetQuery">重置</el-button>
+        </el-form-item>
+      </el-form>
+ 
   
       <!-- 订单状态统计 -->
       <div class="status-statistics">
@@ -47,7 +59,7 @@
             <el-card
               shadow="hover"
               class="status-card"
-              :class="{ 'active-card': filterStatus === status }"
+              :class="{ 'active-card': queryParams.filterStatus === status }"
               @click.native="filterByStatus(status)"
             >
               <div
@@ -161,92 +173,18 @@
     </el-card>
     
 
-    <!-- 发货弹窗 -->
-    <!-- <el-dialog title="发货处理" :visible.sync="shipDialogVisible" width="500px">
-      <el-form :model="shipForm" label-width="80px">
-        <el-form-item label="物流公司">
-          <el-select
-            v-model="shipForm.logisticsCompany"
-            placeholder="请选择物流公司"
-            style="width: 100%"
-          >
-            <el-option
-              v-for="company in logisticsCompanies"
-              :key="company"
-              :label="company"
-              :value="company"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="快递单号">
-          <el-input
-            v-model="shipForm.trackingNo"
-            placeholder="请输入快递单号"
-          />
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="shipDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="confirmShip">确 定</el-button>
-      </span>
-    </el-dialog> -->
-
-    <!-- 退款处理弹窗 -->
-    <!-- <el-dialog
-      title="退款处理"
-      :visible.sync="refundDialogVisible"
-      width="600px"
-    >
-      <div class="refund-info">
-        <h4>退款申请信息</h4>
-        <p>{{ refundForm.reason }}</p>
-        <div v-if="refundForm.images" class="refund-images">
-          <el-image
-            v-for="(img, index) in refundForm.images"
-            :key="index"
-            :src="img"
-            :preview-src-list="refundForm.images"
-            style="width: 100px; height: 100px; margin-right: 10px"
-          />
-        </div>
-      </div>
-      <el-form :model="refundForm" label-width="100px" style="margin-top: 20px">
-        <el-form-item label="订单创建时间">
-          <span>{{ refundForm.createTime }}</span>
-        </el-form-item>
-        <el-form-item label="处理方式">
-          <span>{{ refundForm.processType }}</span>
-        </el-form-item>
-        <el-form-item label="处理结果">
-          <el-radio-group v-model="refundForm.processResult">
-            <el-radio label="通过">通过</el-radio>
-            <el-radio label="拒绝">拒绝</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item
-          v-if="refundForm.processResult === '拒绝'"
-          label="拒绝原因"
-        >
-          <el-input
-            v-model="refundForm.rejectReason"
-            type="textarea"
-            placeholder="请输入拒绝原因"
-          />
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="refundDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="confirmRefund">确 定</el-button>
-      </span>
-    </el-dialog> -->
   </div>
 </template>
 
 <script>
 import { MessageBox, Notification } from 'element-ui'
 import axios from 'axios'
+import FilterForm from '@/components/FilterForm'
 
 export default {
+  components: {
+    FilterForm
+  },
   data() {
     // 生成示例订单数据
     const statusOptions = [
@@ -373,8 +311,19 @@ export default {
 
     return {
       // selectedOrders: [], // 选中的订单
-      filterTime: [], // 时间筛选范围
-      filterStatus: null, // 状态筛选
+      //查询条件
+      queryParams: {
+        merchantName: '',
+        category: '',
+        filterTime: [], // 时间筛选范围
+        filterStatus: null, // 状态筛选
+      },
+      //商品分类
+      categoryOptions: [
+        { value: 'food', label: '食品' },
+        { value: 'clothing', label: '服装' },
+        { value: 'electronics', label: '电子产品' }
+      ],
       currentStatus: null, // 当前路由状态参数
       allOrders: demoOrders, // 所有订单数据
       statusData: statusData, // 订单状态数据
@@ -451,7 +400,7 @@ export default {
 
       // 调试输出
       console.log('当前路由:', this.$route)
-      console.log('当前状态筛选:', this.filterStatus)
+      console.log('当前状态筛选:', this.queryParams.filterStatus)
 
       // 获取当前路由状态参数
       let routeStatus = this.$route.params.status
@@ -465,14 +414,14 @@ export default {
       }
 
       // 优先使用路由参数过滤
-      const statusFilter = routeStatus || this.filterStatus
+      const statusFilter = routeStatus || this.queryParams.filterStatus
       console.log('最终状态筛选条件:', statusFilter)
 
       const filtered = this.allOrders.filter((order) => {
         // 时间筛选
         let timeMatch = true
-        if (Array.isArray(this.filterTime) && this.filterTime.length === 2) {
-          const [start, end] = this.filterTime
+        if (Array.isArray(this.queryParams.filterTime) && this.queryParams.filterTime.length === 2) {
+          const [start, end] = this.queryParams.filterTime
           const orderDate = new Date(order.createTime)
             .toISOString()
             .split('T')[0]
@@ -503,7 +452,7 @@ export default {
   created() {
     this.currentStatus = this.$route.params.status
     if (this.currentStatus) {
-      this.filterStatus = this.currentStatus
+      this.queryParams.filterStatus = this.currentStatus
     }
   },
   methods: {
@@ -556,47 +505,25 @@ export default {
 
     // 点击状态卡片筛选订单
     filterByStatus(status) {
-      this.filterStatus = status
+      this.queryParams.filterStatus = status
     },
 
     // 时间筛选处理
     handleDateFilter(value) {
       if (!value || value.length === 0) {
-        this.filterTime = null
+        this.queryParams.filterTime = null
         this.$refs.table.clearSelection()
       }
     },
 
-
-    // 确认发货
-    // confirmShip() {
-    //   if (!this.shipForm.logisticsCompany) {
-    //     this.$message.error('请选择物流公司')
-    //     return
-    //   }
-    //   if (!this.shipForm.trackingNo) {
-    //     this.$message.error('请输入快递单号')
-    //     return
-    //   }
-
-    //   const order = this.orders.find(
-    //     (o) => o.orderId === this.shipForm.orderId
-    //   )
-    //   if (order) {
-    //     order.status = '待收货'
-    //     order.trackingNo = this.shipForm.trackingNo
-    //     order.logisticsCompany = this.shipForm.logisticsCompany
-
-    //     this.$message.success('发货成功')
-    //     this.shipDialogVisible = false
-    //   }
-    // },
-
-
     // 重置筛选条件
     resetFilters() {
-      this.filterTime = null
-      this.filterStatus = null
+      this.queryParams = {
+        merchantName: '',
+        category: '',
+        filterTime: [],
+        filterStatus: null
+      }
     },
 
     // 查看物流
@@ -609,91 +536,24 @@ export default {
       }
     },
 
-    // 确认退款处理
-    // confirmRefund() {
-    //   if (!this.refundForm.processResult) {
-    //     this.$message.error('请选择处理结果')
-    //     return
-    //   }
-
-    //   if (this.refundForm.processResult === '通过') {
-    //     if (this.refundForm.processType === '退货退款') {
-    //       // 如果是退货退款，需要填写快递信息
-    //       this.$prompt('请输入退款金额', '退款金额', {
-    //         confirmButtonText: '确定',
-    //         cancelButtonText: '取消',
-    //         inputPattern: /\S+/,
-    //         inputErrorMessage: '退款金额不能为空'
-    //       })
-    //         .then(({ value }) => {
-    //           const order = this.orders.find(
-    //             (o) => o.orderId === this.refundForm.orderId
-    //           )
-    //           if (order) {
-    //             order.status = '退款完成'
-    //             order.refundAmount = value
-    //             this.$message.success('退款处理完成')
-    //             this.refundDialogVisible = false
-    //           }
-    //         })
-    //         .catch(() => {
-    //           this.$message.info('已取消操作')
-    //         })
-    //       return
-    //     }
-    //   } else {
-    //     if (!this.refundForm.rejectReason) {
-    //       this.$message.error('请输入拒绝原因')
-    //       return
-    //     }
-    //   }
-
-    //   const order = this.orders.find(
-    //     (o) => o.orderId === this.refundForm.orderId
-    //   )
-    //   if (order) {
-    //     if (this.refundForm.processResult === '通过') {
-    //       order.status = '已退款'
-    //       this.$message.success('退款处理完成')
-    //     } else {
-    //       order.status = '需要客服联系'
-    //       this.$message.warning('已标记为需要客服联系')
-    //     }
-    //     this.refundDialogVisible = false
-    //   }
-    // }
+  
   }
 }
 </script>
 
 <style scoped lang="scss">
+@import "@/styles/index.scss";
+.el-form-item {
+  padding-right: 10px;
+}
 .order-manage {
   padding: 20px;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 
-  // .page-title {
-  //   margin-bottom: 20px;
-  //   font-size: 1.5em;
-  //   font-weight: 500;
-  //   color: #303133;
-  // }
-
-  .filter-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 20px;
-
-    .el-date-picker {
-      width: 300px;
-    }
-  }
-
   .status-statistics {
-    margin: 20px 0;
-
+   
     .status-card {
       cursor: pointer;
       transition: all 0.3s ease;
@@ -789,7 +649,7 @@ export default {
 
   .el-table {
     .price-info {
-      color: #409eff;
+      @include price;
       font-size: 0.9em;
       margin-top: 4px;
     }

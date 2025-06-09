@@ -71,7 +71,20 @@ export const constantRoutes = [
         path: 'index',
         name: 'Goods',
         component: () => import('@/views/goods/index'),
-        meta: { title: '商品审核', icon: 'form' }
+        meta: { title: '商品审核', icon: 'el-icon-goods' }
+      }
+    ]
+  },
+
+  {
+    path: '/goosCategory',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        name: 'GoodsCategory',
+        component: () => import('@/views/goosCategory/index'),
+        meta: { title: '商品分类', icon: 'el-icon-box' }
       }
     ]
   },
@@ -84,7 +97,7 @@ export const constantRoutes = [
         path: 'card',
         name: 'card',
         component: () => import('@/views/card/card'),
-        meta: { title: '充值序列号', icon: 'nested' }
+        meta: { title: '充值序列号', icon: 'el-icon-bank-card' }
       }
     ]
   },
@@ -111,6 +124,41 @@ export const constantRoutes = [
     ]
   },
 
+  {
+    path: '/userManage',
+    component: Layout,
+    redirect: '/userManage/user',
+    name: 'userManage',
+    meta: { title: '用户管理', icon: 'user' },
+    children: [
+      {
+        path: 'user',
+        name: 'User',
+        component: () => import('@/views/userManage/user'),
+        meta: { title: '普通用户', icon: 'el-icon-s-custom' }
+      },
+      {
+        //商家管理
+        path: 'merchantManage',
+        name: 'MerchantManage',
+        component: () => import('@/views/userManage/merchantManage'),
+        meta: { title: '商家管理', icon: 'el-icon-trophy' }
+      },
+    ]
+  },
+
+  {
+    path: '/chart',
+    component: Layout,
+    children: [
+      {
+        path: 'chart',
+        name: 'Chart',
+        component: () => import('@/views/chart/chart'),
+        meta: { title: '数据监控', icon: 'el-icon-data-line' }
+      }
+    ]
+  },
 
 
   // 404 page must be placed at the end !!!
