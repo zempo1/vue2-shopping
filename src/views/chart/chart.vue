@@ -1,13 +1,13 @@
 <template>
     <div class="chart-page">
-       <Seller></Seller>
-        <!-- <Trend></Trend> -->
+       <!-- <Seller></Seller> -->
+        <Trend></Trend>
     </div>
 </template>
 
 <script>
 import Seller from '@/components/Seller';
-// import Trend from '@/components/Trend';
+import Trend from '@/components/Trend';
 
 export default {
     data() {
@@ -16,7 +16,7 @@ export default {
     methods: {},
     components: {
         Seller,
-        // Trend,
+        Trend,
     }
 }
 </script>
